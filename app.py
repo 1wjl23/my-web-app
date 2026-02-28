@@ -11,6 +11,36 @@ from typing import Any, Dict, Optional, Tuple
 
 import pandas as pd
 import streamlit as st
+import os
+import requests
+import torch
+
+# 配置区
+MODEL_PATH = "model.pth" 
+# ！！！请在下方替换为你刚复制的 model.pth 的 Release 链接
+MODEL_URL = "https://github.com/1wjl23/my-web-app/releases/download/102/model.pth" 
+
+# 自动下载函数
+def load_model_file():
+    if not os.path.exists(MODEL_PATH):
+        with st.spinner("首次运行，正在加载 AI 模型，请稍候..."):
+            r = requests.get(MODEL_URL, stream=True)
+            if r.status_code == 200:
+                with open(MODEL_PATH, "wb") as f:
+                    for chunk in r.iter_content(chunk_size=1024*1024):
+                        f.write(chunk)
+                st.success("模型同步完成！")
+            else:
+                st.error("下载失败，请检查链接是否正确")
+                return None
+    return MODEL_PATH
+
+# 在你的主程序加载模型的地方改用这个
+path = load_model_file()
+if path:
+    # 这里写你原本加载模型的代码，比如：
+    # model = torch.load(path, map_location=torch.device('cpu'))
+    st.write("✅ 模型已就绪")
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
