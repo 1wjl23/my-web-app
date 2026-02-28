@@ -62,7 +62,16 @@ CLASS_IDX_TO_NAME: Dict[int, str] = {
     9: "黄芩",
 }
 CLASS_NUM = len(CLASS_IDX_TO_NAME)
-MODEL_PATH = Path(__file__).parent / "中药分类模型_优化版.pth"
+# 找到原来的这一行，把它改成这样：
+# 确保文件名只写 "model.pth"，不要带路径，也不要用中文名
+MODEL_FILE = "model.pth"
+
+if os.path.exists(MODEL_FILE):
+    # map_location='cpu' 是为了确保在云端服务器上能跑
+    model = torch.load(MODEL_FILE, map_location=torch.device('cpu'))
+else:
+    st.error(f"找不到文件 {MODEL_FILE}，请确认 GitHub 仓库里有这个文件。")
+    st.stop() # 停止运行，防止后续报错
 
 APP_DIR = Path(__file__).parent
 DATA_DIR = APP_DIR / "data"
@@ -532,4 +541,5 @@ def _bootstrap_if_bare_python() -> None:
 if __name__ == "__main__":
     _bootstrap_if_bare_python()
     main()
+
 
